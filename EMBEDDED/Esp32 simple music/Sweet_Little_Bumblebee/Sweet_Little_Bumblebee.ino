@@ -79,7 +79,7 @@
 
 // === Diam / Jeda ===
 #define DIAM    0
-
+// BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
 // =========================================================
 // === EDIT BAGIAN INI =====================================
 // =========================================================
@@ -177,7 +177,7 @@ int durasi[] = {
   200, 200, 200, 400, 200, 200, 400, 200, 200, 400,
   // Bag 9 (6)
   400, 400, 400, 400, 800, 800,
-
+  // BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
   // Bag 10 (6)
   350, 350, 200, 200, 350, 50,
   // Bag 11 (8)
@@ -255,7 +255,7 @@ const char* teks1[] = {
   "Sweet", "Sweet little", "Sweet little", "Sweet little", "Sweet little", "Sweet little",
   // Bag 15 (8)
   "More", "More than", "More than just", "More than just", "More than just", "More than just", "More than just", "More than just",
-
+ // BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
   // Bag 16 (7)
   "Du", "Du du", "Du du bi", "Du du bi du", "Du du bi du bi", "Du du bi du bi", "Du du bi du bi",
   // Bag 17 (8)
@@ -400,12 +400,12 @@ void setup() {
 
   pinMode(BUZZER_PIN, OUTPUT);
   noTone(BUZZER_PIN);
-
+  // BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
   for (int i = 0; i < totalNada; i++) {
     tampilkanLCD(teks1[i], teks2[i]);
     mainkanNada(melodi[i], durasi[i]);
   }
-
+  
   lcd.setCursor(0, 0);
   lcd.print("Selesai!        ");
   lcd.setCursor(0, 1);

@@ -160,7 +160,7 @@ volatile int    timerSeconds  = 15;
 #define FE_GS3  208
 #define FE_E3   165
 #define FE_C3   131
-
+// BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
 // =====================================================================
 // === TEMPO HELPER ====================================================
 // =====================================================================
@@ -526,7 +526,7 @@ const char* bumblebeeTeks2[] = {
   "","","","","","La","La da",
   "","","","","","La","La da","La da"
 };
-
+// BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
 // =====================================================================
 // === LAGU 8: TETRIS THEME ============================================
 // =====================================================================
@@ -716,7 +716,7 @@ void playSong(int songId) {
     }
     if (!stopFlag) lcdPrint("Nokia Selesai","(^_^)/");
   }
-
+// BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
   // -------- SUPER MARIO --------
   else if (songId == 5) {
     lcdPrint("Super Mario Bros","Nintendo 1985");
@@ -1265,7 +1265,7 @@ void musicTask(void* pvParams) {
   musicTaskHandle = NULL;
   vTaskDelete(NULL);
 }
-
+// BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
 void startMusicTask(int mode, int value) {
   // Hentikan task sebelumnya jika ada
   if (musicTaskHandle != NULL) {
@@ -1377,7 +1377,7 @@ void setup() {
     Serial.println("\nGagal terhubung WiFi!");
     lcdPrint("  WiFi GAGAL!   ", " Cek SSID/PASS  ");
   }
-
+// BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
   // Setup routes
   server.on("/",       handleRoot);
   server.on("/play",   handlePlay);

@@ -114,6 +114,7 @@ int durasi[] = {
   // "I... I am not a DERE!" (Mulai gugup, agak cepat)
   400, 200, 200, 200, 500, 
 
+  // BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
   // "a Tsun... >///< ...a Tsun-Dere"
   400, 200, 200, 200, 500,
 
@@ -194,7 +195,7 @@ void setup() {
 
   pinMode(BUZZER_PIN, OUTPUT);
   noTone(BUZZER_PIN);
-
+  // BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
   for (int i = 0; i < totalNada; i++) {
     tampilkanLCD(teks1[i], teks2[i]);
     mainkanNada(melodi[i], durasi[i]);

@@ -1,27 +1,32 @@
 /*
  * =====================================================================
- * ESP32 IoT WiFi Music Player + Countdown Timer
+ * ESP32 IoT WiFi Music Player + Countdown Timer (PREMIUM VERSION)
  * Kontrol penuh via Web Browser (WiFi)
  * =====================================================================
- * Hardware:
- *   SDA     -> Pin 21
- *   SCL     -> Pin 22
- *   Buzzer  -> Pin 5
- *   LCD I2C -> 0x27, 16x2
+ * Hardware Pinout:
+ *   - I2C SDA       -> GPIO 21
+ *   - I2C SCL       -> GPIO 22
+ *   - Buzzer        -> GPIO 5
+ *   - RGB LED RED   -> GPIO 4
+ *   - RGB LED GREEN -> GPIO 2
+ *   - RGB LED BLUE  -> GPIO 13
+ *   - Relay Module  -> GPIO 27
+ *   - LCD I2C Addr  -> 0x27 (16x2)
  *
- * Library yang dibutuhkan:
+ * Library Required:
  *   - LiquidCrystal_I2C by Frank de Brabander
- *   - WiFi (bawaan ESP32 Arduino Core)
- *   - WebServer (bawaan ESP32 Arduino Core)
+ *   - WiFi (Built-in)
+ *   - WebServer (Built-in)
  *
- * Fitur:
- *   - 8 lagu: Fur Elise, Happy Birthday, Its Not Like I Like You,
+ * Fitur Utama:
+ *   - 9 lagu: Fur Elise, Happy Birthday, Its Not Like I Like You,
  *             Mayor Minor Scale, Nokia Ringtone, Super Mario Theme,
- *             Sweet Little Bumblebee, Tetris Theme
- *   - Countdown Timer yang bisa diatur durasinya (1-3600 detik)
- *   - Stop lagu/timer kapan saja
- *   - Tampilan LCD realtime
- *   - Web UI yang responsif dan cantik
+ *             Sweet Little Bumblebee, Kiss Me Again, Tetris Theme
+ *   - Countdown Timer Otomatis (1-3600 detik)
+ *   - Music Sync RGB LED (Warna berubah mengikuti frekuensi nada)
+ *   - Relay Control (Otomatis aktif setelah Timer habis)
+ *   - LCD Dashboard dengan Animasi Lirik & Karakter Spesial
+ *   - Web UI Premium yang Responsif & Interactive
  * =====================================================================
  */
 
@@ -34,7 +39,7 @@
 // === KONFIGURASI WiFi — UBAH INI SESUAI JARINGAN ANDA ================
 // =====================================================================
 const char* WIFI_SSID     = "Absolute Solver";
-const char* WIFI_PASSWORD = "CynIsMyWife18";
+const char* WIFI_PASSWORD = "CynIsMyRobo18z";
 // =====================================================================
 
 #define BUZZER_PIN  5
@@ -43,6 +48,11 @@ const char* WIFI_PASSWORD = "CynIsMyWife18";
 #define LCD_ADDR    0x27
 #define LCD_COLS    16
 #define LCD_ROWS    2
+
+#define PIN_LED_R   4
+#define PIN_LED_G   2
+#define PIN_LED_B   13
+#define PIN_RELAY   27
 
 LiquidCrystal_I2C lcd(LCD_ADDR, LCD_COLS, LCD_ROWS);
 WebServer server(80);
@@ -55,6 +65,12 @@ volatile bool   isPlaying     = false;
 volatile bool   isTimer       = false;
 volatile int    currentSong   = -1;
 volatile int    timerSeconds  = 15;
+
+// LED & Relay State
+bool ledOn   = true;
+bool ledSync = true;
+int  ledR = 255, ledG = 0, ledB = 0;
+bool relayState = false;
 
 // =====================================================================
 // === FREKUENSI NADA ==================================================
@@ -95,27 +111,38 @@ volatile int    timerSeconds  = 15;
 #define SOLm    415
 #define LAm     415
 #define SIm     466
-// Oktaf 1 Minor
-#define DOm1    554
-#define REm1    622
-#define MIm1    622
-#define FAm1    740
-#define SOLm1   831
-#define LAm1    831
-#define SIm1    932
-// Oktaf 2 Minor
-#define DOm2    1109
-#define REm2    1245
-#define MIm2    1245
-#define FAm2    1480
-#define SOLm2   1661
-#define LAm2    1661
-#define SIm2    1865
-// Oktaf 3 Minor
-#define DOm3    2217
-#define REm3    2489
-#define FAm3    2960
-#define SOLm3   3322
+// === Oktaf 0 - Minor / Semiton (rendah) ===
+#define DOm     277   // C#3
+#define REm     311   // D#3
+#define MIm     330   // E3
+#define FAm     370   // F#3
+#define SOLm    415   // G#3
+#define LAm     466   // A#3  
+#define SIm     494   // B3   
+// === Oktaf 1 - Minor / Semiton (tengah) ===
+#define DOm1    554   // C#4
+#define REm1    622   // D#4
+#define MIm1    659   // E4
+#define FAm1    740   // F#4
+#define SOLm1   831   // G#4
+#define LAm1    932   // A#4  
+#define SIm1    988   // B4   
+// === Oktaf 2 - Minor / Semiton (tinggi) ===
+#define DOm2    1109  // C#5
+#define REm2    1245  // D#5
+#define MIm2    1319  // E5
+#define FAm2    1480  // F#5
+#define SOLm2   1661  // G#5
+#define LAm2    1865  // A#5  
+#define SIm2    1976  // B5   
+// === Oktaf 3 - Minor / Semiton (sangat tinggi) ===
+#define DOm3    2217  // C#6
+#define REm3    2489  // D#6
+#define MIm3    2637  // E6
+#define FAm3    2960  // F#6
+#define SOLm3   3322  // G#6
+#define LAm3    3729  // A#6 
+#define SIm3    3951  // B6 
 // Nada Tetris
 #define E4   330
 #define F4   349
@@ -160,7 +187,7 @@ volatile int    timerSeconds  = 15;
 #define FE_GS3  208
 #define FE_E3   165
 #define FE_C3   131
-// BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
+
 // =====================================================================
 // === TEMPO HELPER ====================================================
 // =====================================================================
@@ -526,7 +553,7 @@ const char* bumblebeeTeks2[] = {
   "","","","","","La","La da",
   "","","","","","La","La da","La da"
 };
-// BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
+
 // =====================================================================
 // === LAGU 8: TETRIS THEME ============================================
 // =====================================================================
@@ -598,6 +625,35 @@ byte charStar[8]   = { 0x00, 0x04, 0x15, 0x0E, 0x1F, 0x0E, 0x15, 0x04 };
 byte charCake[8]   = { 0x04, 0x04, 0x0E, 0x1F, 0x1B, 0x1F, 0x1F, 0x00 };
 
 // =====================================================================
+// === LED HELPER ======================================================
+// =====================================================================
+void setRgb(int r, int g, int b) {
+  if (!ledOn) {
+    analogWrite(PIN_LED_R, 0);
+    analogWrite(PIN_LED_G, 0);
+    analogWrite(PIN_LED_B, 0);
+    return;
+  }
+  analogWrite(PIN_LED_R, r);
+  analogWrite(PIN_LED_G, g);
+  analogWrite(PIN_LED_B, b);
+}
+
+void updateLedFromNote(int freq) {
+  if (!ledSync || !ledOn) return;
+  if (freq == 0) { setRgb(0,0,0); return; }
+
+  // Mapping frekuensi ke warna (Pelangi sederhana)
+  if (freq < 300)       setRgb(255, 0, 0);    // Merah
+  else if (freq < 400)  setRgb(255, 127, 0);  // Orange
+  else if (freq < 500)  setRgb(255, 255, 0);  // Kuning
+  else if (freq < 700)  setRgb(0, 255, 0);    // Hijau
+  else if (freq < 1000) setRgb(0, 0, 255);    // Biru
+  else if (freq < 1500) setRgb(75, 0, 130);   // Indigo
+  else                  setRgb(143, 0, 255);  // Ungu
+}
+
+// =====================================================================
 // === LCD HELPER ======================================================
 // =====================================================================
 void lcdPrint(const char* b1, const char* b2) {
@@ -617,13 +673,18 @@ void playNote(int freq, int dur, float ratio = 0.85) {
   if (stopFlag) return;
   if (freq == 0) {
     noTone(BUZZER_PIN);
+    if (ledSync) setRgb(0,0,0);
     delay(dur);
   } else {
     int onTime  = (int)(dur * ratio);
     int offTime = dur - onTime;
+    
+    updateLedFromNote(freq);
     tone(BUZZER_PIN, freq, onTime);
     delay(onTime);
+    
     noTone(BUZZER_PIN);
+    if (ledSync) setRgb(0,0,0);
     delay(offTime);
   }
 }
@@ -631,7 +692,23 @@ void playNote(int freq, int dur, float ratio = 0.85) {
 // =====================================================================
 // === LAGU PLAYER =====================================================
 // =====================================================================
+void mainkanNadaKmA(int frekuensi, int lama) {
+  if (stopFlag) return;
+  if (frekuensi == 0) {
+    noTone(BUZZER_PIN);
+    if (ledSync) setRgb(0,0,0);
+  } else {
+    updateLedFromNote(frekuensi);
+    tone(BUZZER_PIN, frekuensi, lama);
+  }
+  delay(lama);
+  noTone(BUZZER_PIN);
+  if (ledSync) setRgb(0,0,0);
+  delay(50);
+}
+
 void playSong(int songId) {
+
   stopFlag  = false;
   isPlaying = true;
   isTimer   = false;
@@ -716,7 +793,7 @@ void playSong(int songId) {
     }
     if (!stopFlag) lcdPrint("Nokia Selesai","(^_^)/");
   }
-// BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
+
   // -------- SUPER MARIO --------
   else if (songId == 5) {
     lcdPrint("Super Mario Bros","Nintendo 1985");
@@ -741,8 +818,117 @@ void playSong(int songId) {
     if (!stopFlag) lcdPrint("Selesai!","La da da~");
   }
 
-  // -------- TETRIS THEME --------
+  // -------- KISS ME AGAIN --------
   else if (songId == 7) {
+    lcdPrint("Kiss Me Again","Siap...");
+    delay(1500);
+
+    // Data lagu (diambil dari Kiss_Me_Again.cpp)
+    const int totalNadaKmA = 97;
+    const int melodiKmA[] = {
+      FA2, FA2, MI2, FA2, LA2, FA2,
+      DO2, LA1, DO2, MI2, FA2, FA2, DO2, LAm1, LA1, DIAM,
+
+      LA2, FA2, DIAM,
+      DO2, LA1, DO2, MI2, FA2, FA2, DO2, LAm1, LA1, DIAM,
+
+      LA2, FA2, DIAM,
+      DO2, LA1, DO2, MI2, FA2, FA2, DO2, LAm1, LA1, DIAM,
+
+      LA2, FA2,
+      LA2, FA2,
+      SOL2, SOL2, RE2, MI2,
+
+      LA2, FA2, DIAM,
+      DO2, LA1, DO2, MI2, FA2, FA2, DO2, LAm1, LA1, DIAM,
+
+      LA2, FA2, DIAM,
+      DO2, LA1, DO2, MI2, FA2, FA2, DO2, LAm1, LA1, DIAM,
+
+      LA2, FA2, DIAM,
+      DO2, LA1, DO2, MI2, FA2, FA2, DO2, LAm1, LA1, DIAM,
+
+      LA2, FA2,
+      LA2, FA2,
+      SOL2, SOL2, RE2, MI2
+    };
+
+    const int durasiKmA[] = {
+      200, 200, 200, 200, 400, 400,
+      200, 200, 200, 200, 400, 400, 200, 200, 200, 200,
+
+      400, 400, 100,
+      200, 200, 200, 200, 400, 400, 200, 200, 200, 200,
+
+      400, 400, 100,
+      200, 200, 200, 200, 400, 400, 200, 200, 200, 200,
+
+      400, 400,
+      400, 400,
+      300, 300, 200, 800,
+
+      400, 400, 100,
+      200, 200, 200, 200, 400, 400, 200, 200, 200, 200,
+
+      400, 400, 100,
+      200, 200, 200, 200, 400, 400, 200, 200, 200, 200,
+
+      400, 400, 100,
+      200, 200, 200, 200, 400, 400, 200, 200, 200, 200,
+
+      400, 400,
+      400, 400,
+      300, 300, 200, 800
+    };
+
+    const char* teks1KmA[] = {
+      "I", "I Re-", "I Remem-", "I Remember", "I Remember", "I Remember",
+      "May-", "Maybe", "Maybe was", "Maybe was the", "Maybe was the", "Maybe was the", "Of", "Of my", "Of my life", "Of my life",
+      "You", "You came", "You came",
+      "To", "To my", "To my heart", "To my heart", "To my heart", "To my heart", "Open", "Open to", "Open to you", "Open to you",
+      "I", "I feel", "I feel",
+      "Warm", "Warm be-", "Warm behind", "Warm behind you", "Take", "Take my", "Take my hand", "Take my hand", "Take my hand", "Take my hand",
+      "Kiss", "Kiss me", "Kiss", "Kiss me", "Kiss", "Kiss me", "Kiss me a-", "Kiss me again",
+      "I", "I feel", "I feel",
+      "You", "You re-", "You remem-", "You remember", "You remember", "You remember", "You remember", "To", "To love", "To love",
+      "Yes", "Yes girl!", "Yes girl!",
+      "Yes!", "Yes! I", "Yes! I love", "Yes! I love", "Yes! I love", "Yes! I love", "Me", "Me at", "Me at all", "",
+      "Just touch", "Just touch my", "Just touch my",
+      "Lips", "Lips and", "Lips and got", "Lips and got", "Lips and got", "Lips and got", "You still", "You still", "You still", "You still",
+      "Kiss", "Kiss you", "Kiss", "Kiss you", "Kiss", "Kiss you", "Kiss you a-", "Kiss you again"
+    };
+
+    const char* teks2KmA[] = {
+      "", "", "", "", "One", "One day",
+      "", "", "", "", "Best", "Best day", "", "", "", "",
+      "", "", "",
+      "", "", "", "My", "My eyes", "My eyes wide", "", "", "", "",
+      "", "", "",
+      "", "", "", "", "", "", "", "Ins-", "Inside", "Inside",
+      "", "",
+      "", "",
+      "", "", "><", ">///<",
+      "", "", "",
+      "", "", "", "", "One", "One day", "One day I start", "", "", "",
+      "", "", "",
+      "", "", "", "You", "You more", "You more than", "", "", "", "",
+      "", "", "",
+      "", "", "", "This", "This pic-", "This picture", "", "Remem-", "Remember", "Remember",
+      "", "",
+      "", "",
+      "", "", "><", ">///<"
+    };
+
+    for (int i = 0; i < totalNadaKmA && !stopFlag; i++) {
+      lcdPrint(teks1KmA[i], teks2KmA[i]);
+      mainkanNadaKmA(melodiKmA[i], durasiKmA[i]);
+    }
+    if (!stopFlag) lcdPrint("Selesai!", "EN untuk ulangi");
+  }
+
+  // -------- TETRIS THEME --------
+  else if (songId == 8) {
+
     lcdPrint("Tetris Theme","Korobeiniki");
     delay(1800);
     for (int i = 0; i < tetrisTotal && !stopFlag; i++) {
@@ -751,8 +937,19 @@ void playSong(int songId) {
       int onT = (int)(dur * 0.85);
       int offT = dur - onT;
       if (!stopFlag) {
-        if (tetrisMelodi[i] == DIAM) { noTone(BUZZER_PIN); delay(dur); }
-        else { tone(BUZZER_PIN, tetrisMelodi[i], onT); delay(onT); noTone(BUZZER_PIN); delay(offT); }
+        if (tetrisMelodi[i] == DIAM) { 
+          noTone(BUZZER_PIN); 
+          if (ledSync) setRgb(0,0,0);
+          delay(dur); 
+        }
+        else { 
+          updateLedFromNote(tetrisMelodi[i]);
+          tone(BUZZER_PIN, tetrisMelodi[i], onT); 
+          delay(onT); 
+          noTone(BUZZER_PIN); 
+          if (ledSync) setRgb(0,0,0);
+          delay(offT); 
+        }
       }
     }
     if (!stopFlag) lcdPrint("GAME CLEAR! :D","(*^_^*)/");
@@ -789,6 +986,11 @@ void runTimer(int totalSec) {
     snprintf(buf2, sizeof(buf2), "     %02d:%02d      ", m, s);
     lcdPrint(buf1, buf2);
 
+    // Led menyala tiap detik
+    if (ledOn && ledSync) setRgb(255, 255, 255); // Putih saat timer
+    delay(100);
+    if (ledOn && ledSync) setRgb(0, 0, 0);
+
     // Beep: makin cepat di 15 detik terakhir
     if (detik <= 15 && !stopFlag) {
       int idx      = 15 - detik;
@@ -797,35 +999,60 @@ void runTimer(int totalSec) {
       int freq     = 880 + (idx * 80);
       if (freq > 2000) freq = 2000;
       unsigned long mulai = millis();
-      while (millis() - mulai < 1000 && !stopFlag) {
-        unsigned long sisa = 1000 - (millis() - mulai);
+      while (millis() - mulai < 900 && !stopFlag) { // 900 karena sudah delay 100 di atas
+        unsigned long sisa = 900 - (millis() - mulai);
         if (sisa < (unsigned long)beepLama) break;
+        
+        updateLedFromNote(freq);
         tone(BUZZER_PIN, freq, beepLama);
         delay(beepLama);
         noTone(BUZZER_PIN);
+        if (ledSync) setRgb(0,0,0);
+
         unsigned long jedaAktual = interval - beepLama;
-        unsigned long sisaSetelah = 1000 - (millis() - mulai);
+        unsigned long sisaSetelah = 900 - (millis() - mulai);
         if (jedaAktual > sisaSetelah) break;
         delay(jedaAktual);
       }
     } else if (!stopFlag) {
-      // Delay biasa untuk detik > 15
+      // Delay sisa detik
       unsigned long t = millis();
-      while (millis() - t < 1000 && !stopFlag) delay(10);
+      while (millis() - t < 900 && !stopFlag) delay(10);
     }
   }
 
   if (!stopFlag) {
     lcdPrint("  Hitung Mundur ", "     00:00      ");
+    
+    // Berkedip berkali-kali saat selesai
+    for(int b=0; b<10; b++) {
+      setRgb(255, 0, 0); delay(100);
+      setRgb(0, 255, 0); delay(100);
+      setRgb(0, 0, 255); delay(100);
+    }
+    setRgb(0,0,0);
+
     delay(300);
     lcdPrint(" ---Time out--- ","");
+    
     int nada[] = { C5, E5, G5, C6, 1319, C6, 1319 };
     int lama[] = { 120, 120, 120, 200, 400, 150, 700 };
     for (int i = 0; i < 7 && !stopFlag; i++) {
+      updateLedFromNote(nada[i]);
       tone(BUZZER_PIN, nada[i], lama[i]);
       delay(lama[i] + 40);
       noTone(BUZZER_PIN);
+      if (ledSync) setRgb(0,0,0);
       delay(20);
+    }
+
+    // Relay ON setelah nada ---Time out--- selesai
+    if (!stopFlag) {
+      digitalWrite(PIN_RELAY, HIGH);
+      relayState = true;
+      delay(3000); // Menyala selama 3 detik
+      digitalWrite(PIN_RELAY, LOW);
+      relayState = false;
     }
   }
 
@@ -841,7 +1068,13 @@ String getStatusJson() {
   s += "\"playing\":" + String(isPlaying ? "true" : "false") + ",";
   s += "\"timer\":"   + String(isTimer   ? "true" : "false") + ",";
   s += "\"song\":"    + String(currentSong) + ",";
-  s += "\"timerSet\":" + String(timerSeconds);
+  s += "\"timerSet\":" + String(timerSeconds) + ",";
+  s += "\"ledOn\":"    + String(ledOn ? "true" : "false") + ",";
+  s += "\"ledSync\":"  + String(ledSync ? "true" : "false") + ",";
+  s += "\"ledR\":"     + String(ledR) + ",";
+  s += "\"ledG\":"     + String(ledG) + ",";
+  s += "\"ledB\":"     + String(ledB) + ",";
+  s += "\"relay\":"    + String(relayState ? "true" : "false");
   s += "}";
   return s;
 }
@@ -1057,9 +1290,28 @@ const char* HTML_PAGE = R"rawhtml(
     white-space: nowrap;
   }
   .toast.show { opacity: 1; }
+  /* LED Control */
+  .led-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+  .led-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(233,69,96,0.3);
+    border-radius: 12px; padding: 15px;
+  }
+  .switch-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  input[type="color"] {
+    width: 100%; height: 40px; border: none; border-radius: 8px; background: none; cursor: pointer;
+  }
+  .btn-toggle {
+    padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1); color: #eee; cursor: pointer; font-size: 0.85em; font-weight: 600;
+  }
+  .btn-toggle.active { background: #e94560; border-color: #e94560; }
+  .btn-relay { background: rgba(74, 222, 128, 0.1); border-color: rgba(74, 222, 128, 0.3); color: #4ade80; }
+  .btn-relay.active { background: #22c55e; border-color: #22c55e; color: #fff; }
   @media (max-width: 400px) {
     .songs-grid { grid-template-columns: 1fr; }
     .timer-display { font-size: 2.4em; }
+    .led-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -1113,12 +1365,37 @@ const char* HTML_PAGE = R"rawhtml(
     </button>
     <button class="song-btn" id="sb7" onclick="playSong(7)">
       <div class="snum">LAGU 8</div>
+      <div class="sname">Kiss Me Again</div>
+      <div class="sdesc">Sweet love song</div>
+    </button>
+    <button class="song-btn" id="sb8" onclick="playSong(8)">
+      <div class="snum">LAGU 9</div>
       <div class="sname">Tetris Theme</div>
       <div class="sdesc">Korobeiniki</div>
     </button>
   </div>
   <div class="action-row" style="margin-top:12px">
     <button class="btn-play btn-red" onclick="stopAll()">&#9646;&#9646; Stop Musik</button>
+  </div>
+</div>
+
+<!-- LCD CONTROL -->
+<div class="section">
+  <div class="section-title">&#128221; LCD Control</div>
+  <div class="timer-box" style="border-color: rgba(167, 139, 250, 0.25);">
+    <div style="font-size:0.85em;color:#888;margin-bottom:12px">Tampilkan teks kustom di layar LCD 16x2</div>
+    <div class="custom-timer">
+      <label style="width: 60px">Baris 1:</label>
+      <input type="text" id="lcdL1" placeholder="Maks 16 karakter" maxlength="16">
+    </div>
+    <div class="custom-timer">
+      <label style="width: 60px">Baris 2:</label>
+      <input type="text" id="lcdL2" placeholder="Maks 16 karakter" maxlength="16">
+    </div>
+    <div class="action-row">
+      <button class="btn-play btn-green" onclick="setLCD()">&#128187; Update LCD</button>
+      <button class="btn-play btn-red" onclick="stopAll()">&#9646;&#9646; Reset</button>
+    </div>
   </div>
 </div>
 
@@ -1144,6 +1421,41 @@ const char* HTML_PAGE = R"rawhtml(
     <div class="action-row">
       <button class="btn-play btn-green" onclick="startTimer()">&#9654; Mulai Timer</button>
       <button class="btn-play btn-red" onclick="stopAll()">&#9646;&#9646; Stop</button>
+    </div>
+  </div>
+</div>
+
+<!-- LED CONTROL -->
+<div class="section">
+  <div class="section-title">&#128161; RGB LED Control</div>
+  <div class="led-grid">
+    <div class="led-card">
+      <div class="switch-container">
+        <span>Power LED</span>
+        <button id="btnLedPower" class="btn-toggle" onclick="toggleLedPower()">OFF</button>
+      </div>
+      <div class="switch-container">
+        <span>Sync Musik</span>
+        <button id="btnLedSync" class="btn-toggle" onclick="toggleLedSync()">OFF</button>
+      </div>
+    </div>
+    <div class="led-card">
+      <div style="font-size: 0.8em; color: #888; margin-bottom: 5px;">Warna Manual</div>
+      <input type="color" id="ledColor" onchange="updateLedColor()" value="#ff0000">
+    </div>
+  </div>
+</div>
+
+<!-- RELAY CONTROL -->
+<div class="section">
+  <div class="section-title">&#128268; Relay Control (D27)</div>
+  <div class="timer-box" style="border-color: rgba(74, 222, 128, 0.3);">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <div style="font-size: 0.9em; font-weight: 600;">Status Relay</div>
+        <div style="font-size: 0.75em; color: #888;">Manual On/Off pin D27</div>
+      </div>
+      <button id="btnRelay" class="btn-play btn-relay" style="flex: 0 0 120px;" onclick="toggleRelay()">OFF</button>
     </div>
   </div>
 </div>
@@ -1199,6 +1511,56 @@ const char* HTML_PAGE = R"rawhtml(
     });
   }
 
+  function setLCD() {
+    let l1 = document.getElementById('lcdL1').value;
+    let l2 = document.getElementById('lcdL2').value;
+    showToast('Mengirim ke LCD...');
+    fetch('/setlcd?l1=' + encodeURIComponent(l1) + '&l2=' + encodeURIComponent(l2))
+      .then(r => r.text())
+      .then(t => {
+        showToast(t);
+        updateStatus();
+      });
+  }
+
+  let ledOn = true;
+  let ledSync = true;
+  let relayOn = false;
+
+  function toggleLedPower() {
+    ledOn = !ledOn;
+    sendLedCmd();
+  }
+
+  function toggleLedSync() {
+    ledSync = !ledSync;
+    sendLedCmd();
+  }
+
+  function updateLedColor() {
+    sendLedCmd();
+  }
+
+  function sendLedCmd() {
+    let color = document.getElementById('ledColor').value;
+    let r = parseInt(color.substr(1,2), 16);
+    let g = parseInt(color.substr(3,2), 16);
+    let b = parseInt(color.substr(5,2), 16);
+    fetch(`/setledrgb?r=${r}&g=${g}&b=${b}&on=${ledOn?1:0}&sync=${ledSync?1:0}`)
+      .then(r => r.text()).then(t => {
+        showToast('LED: ' + t);
+        updateStatus();
+      });
+  }
+
+  function toggleRelay() {
+    let newState = relayOn ? 0 : 1;
+    fetch('/setrelay?state=' + newState).then(r => r.text()).then(t => {
+      showToast('Relay: ' + t);
+      updateStatus();
+    });
+  }
+
   function showToast(msg) {
     let el = document.getElementById('toast');
     el.textContent = msg;
@@ -1208,24 +1570,52 @@ const char* HTML_PAGE = R"rawhtml(
 
   function updateStatus() {
     fetch('/status').then(r => r.json()).then(d => {
+      // Update LED controls
+      ledOn = d.ledOn;
+      ledSync = d.ledSync;
+      relayOn = d.relay;
+
+      let btnP = document.getElementById('btnLedPower');
+      btnP.textContent = d.ledOn ? 'ON' : 'OFF';
+      btnP.classList.toggle('active', d.ledOn);
+
+      let btnS = document.getElementById('btnLedSync');
+      btnS.textContent = d.ledSync ? 'SYNC ON' : 'SYNC OFF';
+      btnS.classList.toggle('active', d.ledSync);
+
+      let btnR = document.getElementById('btnRelay');
+      btnR.textContent = d.relay ? 'RELAY ON' : 'RELAY OFF';
+      btnR.classList.toggle('active', d.relay);
+
+      let hex = "#" + ((1 << 24) + (d.ledR << 16) + (d.ledG << 8) + d.ledB).toString(16).slice(1);
+      document.getElementById('ledColor').value = hex;
+
       let dot  = document.getElementById('statusDot');
       let txt  = document.getElementById('statusText');
-      let names = ['Fur Elise','Happy Birthday','Its Not Like I Like You',
-                   'Mayor Minor Scale','Nokia Ringtone','Super Mario Theme',
-                   'Sweet Little Bumblebee','Tetris Theme'];
-      // update dot
+      let names = [
+        'Fur Elise',
+        'Happy Birthday',
+        'Its Not Like I Like You',
+        'Mayor Minor Scale',
+        'Nokia Ringtone',
+        'Super Mario Theme',
+        'Sweet Little Bumblebee',
+        'Kiss Me Again',
+        'Tetris Theme'
+      ];
+
       dot.className = 'dot';
       if (d.playing || d.timer) dot.classList.add('active');
-      // update text
+
       if (d.playing && d.song >= 0) {
-        txt.textContent = '&#9654; Memutar: ' + names[d.song];
+        txt.textContent = '\u25B6 Memutar: ' + (names[d.song] || 'Unknown');
       } else if (d.timer) {
-        txt.textContent = '&#9201; Timer sedang berjalan...';
+        txt.textContent = '\u23F1 Timer sedang berjalan...';
       } else {
-        txt.textContent = 'Siap — pilih musik atau jalankan timer';
+        txt.textContent = 'Siap \u2014 pilih musik atau jalankan timer';
       }
-      // update song buttons highlight
-      for (let i = 0; i < 8; i++) {
+
+      for (let i = 0; i <= 8; i++) {
         let btn = document.getElementById('sb' + i);
         if (btn) {
           btn.classList.toggle('active', d.playing && d.song === i);
@@ -1236,7 +1626,6 @@ const char* HTML_PAGE = R"rawhtml(
     });
   }
 
-  // Poll setiap 2 detik
   setInterval(updateStatus, 2000);
   updateStatus();
 </script>
@@ -1265,7 +1654,7 @@ void musicTask(void* pvParams) {
   musicTaskHandle = NULL;
   vTaskDelete(NULL);
 }
-// BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
+
 void startMusicTask(int mode, int value) {
   // Hentikan task sebelumnya jika ada
   if (musicTaskHandle != NULL) {
@@ -1293,17 +1682,19 @@ void handlePlay() {
     return;
   }
   int songId = server.arg("song").toInt();
-  if (songId < 0 || songId > 7) {
+  if (songId < 0 || songId > 8) {
     server.send(400, "text/plain", "Nomor lagu 0-7");
+
     return;
   }
   String names[] = {
     "Fur Elise","Happy Birthday","Its Not Like I Like You",
     "Mayor Minor Scale","Nokia Ringtone","Super Mario Theme",
-    "Sweet Little Bumblebee","Tetris Theme"
+    "Sweet Little Bumblebee","Kiss Me Again","Tetris Theme"
   };
   startMusicTask(0, songId);
   server.send(200, "text/plain", "Memutar: " + names[songId]);
+
 }
 
 void handleTimer() {
@@ -1338,6 +1729,52 @@ void handleStatus() {
   server.send(200, "application/json", getStatusJson());
 }
 
+void handleSetLCD() {
+  String l1 = server.hasArg("l1") ? server.arg("l1") : "";
+  String l2 = server.hasArg("l2") ? server.arg("l2") : "";
+  
+  // Hentikan aktivitas lain agar tidak menimpa LCD
+  stopFlag = true;
+  delay(150);
+  noTone(BUZZER_PIN);
+  isPlaying = false;
+  isTimer   = false;
+  
+  lcdPrint(l1.c_str(), l2.c_str());
+  server.send(200, "text/plain", "LCD Terupdate!");
+}
+
+void handleSetLedRgb() {
+  if (server.hasArg("on"))   ledOn   = server.arg("on") == "1";
+  if (server.hasArg("sync")) ledSync = server.arg("sync") == "1";
+  if (server.hasArg("r"))    ledR    = server.arg("r").toInt();
+  if (server.hasArg("g"))    ledG    = server.arg("g").toInt();
+  if (server.hasArg("b"))    ledB    = server.arg("b").toInt();
+  
+  if (ledOn) {
+    // Jika sedang tidak memutar musik/timer, tampilkan warna manual
+    // meskipun Sync aktif (agar user tahu LED sudah nyala)
+    if (!isPlaying && !isTimer) {
+      setRgb(ledR, ledG, ledB);
+    } else {
+      // Jika sedang main musik
+      if (!ledSync) setRgb(ledR, ledG, ledB);
+      // Jika sync ON, nada selanjutnya yang akan mengatur
+    }
+  } else {
+    setRgb(0, 0, 0);
+  }
+  server.send(200, "text/plain", "OK");
+}
+
+void handleSetRelay() {
+  if (server.hasArg("state")) {
+    relayState = server.arg("state") == "1";
+    digitalWrite(PIN_RELAY, relayState ? HIGH : LOW);
+  }
+  server.send(200, "text/plain", relayState ? "ON" : "OFF");
+}
+
 // =====================================================================
 // === SETUP ===========================================================
 // =====================================================================
@@ -1351,6 +1788,14 @@ void setup() {
 
   pinMode(BUZZER_PIN, OUTPUT);
   noTone(BUZZER_PIN);
+  
+  pinMode(PIN_LED_R, OUTPUT);
+  pinMode(PIN_LED_G, OUTPUT);
+  pinMode(PIN_LED_B, OUTPUT);
+  setRgb(ledR, ledG, ledB);
+
+  pinMode(PIN_RELAY, OUTPUT);
+  digitalWrite(PIN_RELAY, LOW);
 
   // Koneksi WiFi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -1377,13 +1822,16 @@ void setup() {
     Serial.println("\nGagal terhubung WiFi!");
     lcdPrint("  WiFi GAGAL!   ", " Cek SSID/PASS  ");
   }
-// BY @mc.zminecrafter_18 ~ Zmc18_Roboticz ~ Zmc18-Robotics
+
   // Setup routes
   server.on("/",       handleRoot);
   server.on("/play",   handlePlay);
   server.on("/timer",  handleTimer);
   server.on("/stop",   handleStop);
   server.on("/status", handleStatus);
+  server.on("/setlcd", handleSetLCD);
+  server.on("/setledrgb", handleSetLedRgb);
+  server.on("/setrelay", handleSetRelay);
   server.begin();
   Serial.println("Web server aktif di port 80");
 }

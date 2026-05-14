@@ -38,8 +38,8 @@
 // =====================================================================
 // === KONFIGURASI WiFi — UBAH INI SESUAI JARINGAN ANDA ================
 // =====================================================================
-const char* WIFI_SSID     = "Absolute Solver";
-const char* WIFI_PASSWORD = "CynIsMyRobo18z";
+const char* WIFI_SSID     = "YOUR_WIFI_NAME";
+const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
 // =====================================================================
 
 #define BUZZER_PIN  5

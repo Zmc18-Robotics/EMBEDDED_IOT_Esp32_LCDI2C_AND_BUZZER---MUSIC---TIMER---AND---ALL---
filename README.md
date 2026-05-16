@@ -9,7 +9,7 @@ IRL Project :
 <img width="720" height="402" alt="image" src="https://github.com/user-attachments/assets/e97d2ead-be8d-48a8-a146-697953c93c5f" />
 
 Circuit :
-<img width="372" height="241" alt="image" src="https://github.com/user-attachments/assets/fecfc6ca-64d4-460b-a146-38a04fd98ef8" />
+<img width="3000" height="1315" alt="circuit_image" src="https://github.com/user-attachments/assets/0fd7933d-b7b4-40ff-ac16-320d63b44a21" />
 
 
 ---

@@ -56,8 +56,8 @@
 
 // --- KONFIGURASI WiFi ---
 char auth[] = BLYNK_AUTH_TOKEN;
-const char *WIFI_SSID = "Absolute Solver";
-const char *WIFI_PASSWORD = "CynIsMyRobo18z";
+const char *WIFI_SSID = "YOUR_WIFI_NAME";
+const char *WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
 
 LiquidCrystal_I2C lcd(LCD_ADDR, LCD_COLS, LCD_ROWS);
 WebServer server(80);

@@ -104,7 +104,7 @@ void nadaAkhir() {
     delay(20);
   }
 }
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 void setup() {
   Wire.begin(SDA_PIN, SCL_PIN);
   lcd.init();

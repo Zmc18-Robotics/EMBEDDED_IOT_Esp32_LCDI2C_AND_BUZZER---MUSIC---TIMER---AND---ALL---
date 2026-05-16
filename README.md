@@ -6,6 +6,7 @@ Song, Music, Timer, and more!⌚⏱️
 Here the pictures :
 
 IRL Project :
+
 <img width="720" height="402" alt="image" src="https://github.com/user-attachments/assets/e97d2ead-be8d-48a8-a146-697953c93c5f" />
 
 Circuit :
@@ -21,7 +22,11 @@ Here the materials :
 - Esp32 x1
 - Passive Buzzer x1
 - LCD I2C 16x2 x1
-
+- RGB LED Module x1
+- Relay Module 3.3v x1
+- 18650 Battrery x1
+- 18650 Battery Case ( 1 slot ) x1
+- Motor / Step Up 400Kv / LED x1
 ---
 
 Have fun~

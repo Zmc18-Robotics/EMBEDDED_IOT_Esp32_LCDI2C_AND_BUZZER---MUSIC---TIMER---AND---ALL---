@@ -6,9 +6,9 @@
  */
 
 // --- BLYNK CONFIG ---
-#define BLYNK_TEMPLATE_ID "TMPL6LyMpDXn6"
+#define BLYNK_TEMPLATE_ID "YOUR_TEMPLATE_ID"
 #define BLYNK_TEMPLATE_NAME "Esp32 Music Timer"
-#define BLYNK_AUTH_TOKEN "1vRsAz7qEjQM-Bc2lQPNZNzYXBTvU3f9"
+#define BLYNK_AUTH_TOKEN "YOUR_BLYNK_TOKEN"
 
 /*
  * =====================================================================
@@ -73,7 +73,7 @@ bool ledOn = true;
 bool ledSync = true;
 int ledR = 255, ledG = 0, ledB = 0;
 bool relayState = false;
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 String inputL1 = "";
 String inputL2 = "";
 
@@ -253,7 +253,7 @@ const char *furEliseTeks2[] = {
     "~",          "~",           "~",       "~",       "~van~",   "~",
     "~",          "~beethoven~", "~",       "(*^_^*)", "~",       "~",
     "~",          "~fur~",       "~elise~", "~da~",    "~da~"};
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // =====================================================================
 // === LAGU 2: HAPPY BIRTHDAY ==========================================
 // =====================================================================
@@ -918,6 +918,7 @@ const int melodiKmA[] = {
     DIAM, DO2, LA1,  DO2,  MI2, FA2,  FA2, DO2,  LAm1, LA1, DIAM, LA2, FA2,
     DIAM, DO2, LA1,  DO2,  MI2, FA2,  FA2, DO2,  LAm1, LA1, DIAM, LA2, FA2,
     LA2,  FA2, SOL2, SOL2, RE2, MI2};
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 const int durasiKmA[] = {
     200, 200, 200, 200, 400, 400, 200, 200, 200, 200, 400, 400, 200, 200,
     200, 200, 400, 400, 100, 200, 200, 200, 200, 400, 400, 200, 200, 200,
@@ -1151,7 +1152,7 @@ const char *tetrisTeks2[] = {
     "~",          "~combo!~",  "~",        "~",          "~tetris!~",
     "~",          "~",         "~clear!~", "(>o<)/",     "~da da~",
     "~top!~",     "~score!~",  "~",        "~dun dun~",  "~DUN DUN!!~"};
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // =====================================================================
 // === HELPERS =========================================================
 // =====================================================================
@@ -1247,7 +1248,7 @@ void playNote(int freq, int dur, float ratio = 0.85) {
     noTone(BUZZER_PIN);
     if (ledSync)
       setRgb(0, 0, 0);
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
     if (offTime > 0)
       delay(offTime);
   }
@@ -1353,7 +1354,7 @@ BLYNK_WRITE(V6) {
     Blynk.virtualWrite(V20, "LCD Updated!"); 
   }
 }
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // V7: [Integer] Switch Master ON/OFF untuk lampu LED
 BLYNK_WRITE(V7) {
   ledOn = param.asInt() == 1;
@@ -1607,7 +1608,7 @@ void playSong(int songId) {
   currentSong = -1;
   Blynk.virtualWrite(V20, "System Ready");
 }
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 int beepIntervalMs[] = {900, 850, 800, 720, 640, 560, 480, 400,
                         330, 270, 220, 180, 150, 120, 100};
 
@@ -1755,7 +1756,7 @@ void setup() {
   lcd.backlight();
   Wire.setClock(400000); // Set I2C ke High Speed (400kHz) agar lirik sinkron
   lcdPrint("Initializing...", "Premium Hybrid");
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
   pinMode(BUZZER_PIN, OUTPUT);
   pinMode(PIN_LED_R, OUTPUT);
   pinMode(PIN_LED_G, OUTPUT);

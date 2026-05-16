@@ -16,7 +16,7 @@ Circuit :
 ---
 
 # Description
-Just a simple Esp32 with LCD I2C and Buzzer music / timer
+Just a simple Esp32 Music Timer
 
 Here the materials :
 - Esp32 x1

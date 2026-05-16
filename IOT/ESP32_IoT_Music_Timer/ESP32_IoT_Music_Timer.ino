@@ -71,7 +71,7 @@ bool ledOn   = true;
 bool ledSync = true;
 int  ledR = 255, ledG = 0, ledB = 0;
 bool relayState = false;
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // =====================================================================
 // === FREKUENSI NADA ==================================================
 // =====================================================================
@@ -205,7 +205,7 @@ bool relayState = false;
 #define H_TET     (BEAT_TET * 2)
 #define E_TET     (BEAT_TET / 2)
 #define DQ_TET    (BEAT_TET * 3 / 2)
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // =====================================================================
 // === LAGU 1: FUR ELISE — BEETHOVEN ===================================
 // =====================================================================
@@ -283,7 +283,7 @@ const char* happyBirthTeks1[] = {
   "Hap-","py","Birth-","day,","dear","...","Friend!",
   "Hap-","py","Birth-","day","to","you!"
 };
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // =====================================================================
 // === LAGU 3: ITS NOT LIKE I LIKE YOU =================================
 // =====================================================================
@@ -435,7 +435,7 @@ const char* marioTeks2[] = {
   "da DUM DUM~","da da DUM!!","~","(*^_^*)/",
   "~","~","(^o^)/","GAME CLEAR!"
 };
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // =====================================================================
 // === LAGU 7: SWEET LITTLE BUMBLEBEE ==================================
 // =====================================================================
@@ -602,7 +602,7 @@ const char* tetrisTeks2[] = {
   "~da da~","~top!~","~score!~","~",
   "~dun dun~","~DUN DUN!!~"
 };
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // =====================================================================
 // === CUSTOM CHAR HAPPY BIRTHDAY ======================================
 // =====================================================================
@@ -757,7 +757,7 @@ void playSong(int songId) {
     }
     if (!stopFlag) lcdPrint("Happy Birthday!", "Selesai!");
   }
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
   // -------- ITS NOT LIKE I LIKE YOU --------
   else if (songId == 2) {
     lcdPrint("ESP32 Music","Siap...");
@@ -897,7 +897,7 @@ void playSong(int songId) {
       "Lips", "Lips and", "Lips and got", "Lips and got", "Lips and got", "Lips and got", "You still", "You still", "You still", "You still",
       "Kiss", "Kiss you", "Kiss", "Kiss you", "Kiss", "Kiss you", "Kiss you a-", "Kiss you again"
     };
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
     const char* teks2KmA[] = {
       "", "", "", "", "One", "One day",
       "", "", "", "", "Best", "Best day", "", "", "", "",
@@ -1045,7 +1045,7 @@ void runTimer(int totalSec) {
       if (ledSync) setRgb(0,0,0);
       delay(20);
     }
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
     // Relay ON setelah nada ---Time out--- selesai
     if (!stopFlag) {
       digitalWrite(PIN_RELAY, HIGH);
@@ -1654,7 +1654,7 @@ void musicTask(void* pvParams) {
   musicTaskHandle = NULL;
   vTaskDelete(NULL);
 }
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 void startMusicTask(int mode, int value) {
   // Hentikan task sebelumnya jika ada
   if (musicTaskHandle != NULL) {
@@ -1766,7 +1766,7 @@ void handleSetLedRgb() {
   }
   server.send(200, "text/plain", "OK");
 }
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 void handleSetRelay() {
   if (server.hasArg("state")) {
     relayState = server.arg("state") == "1";

@@ -1,4 +1,4 @@
-# Esp32 LCDI2C AND BUZZER ( MUSIC / SONG / TIMER )
+# Esp32 Music Timer
 Song, Music, Timer, and more!⌚⏱️
 
 ---
@@ -7,7 +7,8 @@ Here the pictures :
 
 IRL Project :
 
-<img width="720" height="402" alt="image" src="https://github.com/user-attachments/assets/e97d2ead-be8d-48a8-a146-697953c93c5f" />
+<img width="1040" height="527" alt="image" src="https://github.com/user-attachments/assets/c99b6042-b489-40e0-854d-23e2737c715f" />
+
 
 Circuit :
 <img width="3000" height="1315" alt="circuit_image" src="https://github.com/user-attachments/assets/0fd7933d-b7b4-40ff-ac16-320d63b44a21" />

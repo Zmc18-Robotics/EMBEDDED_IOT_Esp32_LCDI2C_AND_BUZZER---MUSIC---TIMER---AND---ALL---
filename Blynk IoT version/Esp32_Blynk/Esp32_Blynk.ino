@@ -40,7 +40,7 @@
 #include <WebServer.h>
 #include <WiFi.h>
 #include <Wire.h>
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // PIN DEFINITIONS
 #define BUZZER_PIN 5
 #define SDA_PIN 21
@@ -73,7 +73,7 @@ bool ledOn = true;
 bool ledSync = true;
 int ledR = 255, ledG = 0, ledB = 0;
 bool relayState = false;
-//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
+
 String inputL1 = "";
 String inputL2 = "";
 
@@ -183,7 +183,7 @@ String inputL2 = "";
 #define FE_C3 131
 
 #define DIAM 0
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // Tempo Helper
 #define BPM_FUR 120
 #define BEAT_FUR (60000 / BPM_FUR)
@@ -253,7 +253,7 @@ const char *furEliseTeks2[] = {
     "~",          "~",           "~",       "~",       "~van~",   "~",
     "~",          "~beethoven~", "~",       "(*^_^*)", "~",       "~",
     "~",          "~fur~",       "~elise~", "~da~",    "~da~"};
-//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
+
 // =====================================================================
 // === LAGU 2: HAPPY BIRTHDAY ==========================================
 // =====================================================================
@@ -277,7 +277,7 @@ const char *happyBirthTeks1[] = {
     "py",     "Birth-", "day",    "to",  "you!",    "Hap-", "py",
     "Birth-", "day,",   "dear",   "...", "Friend!", "Hap-", "py",
     "Birth-", "day",    "to",     "you!"};
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // =====================================================================
 // === LAGU 3: ITS NOT LIKE I LIKE YOU =================================
 // =====================================================================
@@ -456,7 +456,7 @@ const char *nokiaTeks2[] = {"da...",
                             "(^_^)/",
                             "",
                             ""};
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // =====================================================================
 // === LAGU 6: SUPER MARIO THEME =======================================
 // =====================================================================
@@ -904,7 +904,7 @@ const char *bumblebeeTeks2[] = {"",
                                 "",
                                 "",
                                 ""};
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // =====================================================================
 // === LAGU 8: KISS ME AGAIN — REPAINT =================================
 // =====================================================================
@@ -918,7 +918,6 @@ const int melodiKmA[] = {
     DIAM, DO2, LA1,  DO2,  MI2, FA2,  FA2, DO2,  LAm1, LA1, DIAM, LA2, FA2,
     DIAM, DO2, LA1,  DO2,  MI2, FA2,  FA2, DO2,  LAm1, LA1, DIAM, LA2, FA2,
     LA2,  FA2, SOL2, SOL2, RE2, MI2};
-//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 const int durasiKmA[] = {
     200, 200, 200, 200, 400, 400, 200, 200, 200, 200, 400, 400, 200, 200,
     200, 200, 400, 400, 100, 200, 200, 200, 200, 400, 400, 200, 200, 200,
@@ -1121,7 +1120,7 @@ const char *teks2KmA[] = {"",
                           "",
                           "><",
                           ">///<"};
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // =====================================================================
 // === LAGU 9: TETRIS THEME ============================================
 // =====================================================================
@@ -1152,7 +1151,7 @@ const char *tetrisTeks2[] = {
     "~",          "~combo!~",  "~",        "~",          "~tetris!~",
     "~",          "~",         "~clear!~", "(>o<)/",     "~da da~",
     "~top!~",     "~score!~",  "~",        "~dun dun~",  "~DUN DUN!!~"};
-//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
+
 // =====================================================================
 // === HELPERS =========================================================
 // =====================================================================
@@ -1169,8 +1168,9 @@ void setRgb(int r, int g, int b) {
 }
 
 void updateLedFromNote(int freq) {
-  if (!ledOn || !ledSync) return;
-  
+  if (!ledOn || !ledSync)
+    return;
+
   if (freq <= 0) {
     setRgb(0, 0, 0);
     return;
@@ -1193,22 +1193,28 @@ void updateLedFromNote(int freq) {
 
 void lcdPrint(const char *b1, const char *b2) {
   // Debug ke Serial Monitor
-  Serial.print("LCD L1: ["); Serial.print(b1); Serial.println("]");
-  Serial.print("LCD L2: ["); Serial.print(b2); Serial.println("]");
+  Serial.print("LCD L1: [");
+  Serial.print(b1);
+  Serial.println("]");
+  Serial.print("LCD L2: [");
+  Serial.print(b2);
+  Serial.println("]");
 
   char buf1[17] = "                "; // 16 spasi
   char buf2[17] = "                ";
-  
+
   if (b1) {
     int len = strlen(b1);
-    if (len > 16) len = 16;
+    if (len > 16)
+      len = 16;
     memcpy(buf1, b1, len);
     buf1[16] = '\0';
   }
-  
+
   if (b2) {
     int len = strlen(b2);
-    if (len > 16) len = 16;
+    if (len > 16)
+      len = 16;
     memcpy(buf2, b2, len);
     buf2[16] = '\0';
   }
@@ -1248,7 +1254,7 @@ void playNote(int freq, int dur, float ratio = 0.85) {
     noTone(BUZZER_PIN);
     if (ledSync)
       setRgb(0, 0, 0);
-//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
+
     if (offTime > 0)
       delay(offTime);
   }
@@ -1278,7 +1284,7 @@ BLYNK_WRITE(V0) {
   if (songId >= 0 && songId <= 8)
     startMusicTask(0, songId);
 }
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // V1: [Integer] Tombol Stop untuk mematikan semua fungsi
 BLYNK_WRITE(V1) {
   if (param.asInt() == 1) {
@@ -1301,16 +1307,16 @@ BLYNK_WRITE(V3) {
 }
 
 // V4: [String] Input teks untuk baris 1 LCD
-BLYNK_WRITE(V4) { 
-  inputL1 = param.asString(); 
-  Serial.print("V4 Received: "); 
+BLYNK_WRITE(V4) {
+  inputL1 = param.asString();
+  Serial.print("V4 Received: ");
   Serial.println(inputL1);
 }
 
 // V5: [String] Input teks untuk baris 2 LCD
-BLYNK_WRITE(V5) { 
-  inputL2 = param.asString(); 
-  Serial.print("V5 Received: "); 
+BLYNK_WRITE(V5) {
+  inputL2 = param.asString();
+  Serial.print("V5 Received: ");
   Serial.println(inputL2);
 }
 
@@ -1318,43 +1324,45 @@ BLYNK_WRITE(V5) {
 BLYNK_WRITE(V6) {
   if (param.asInt() == 1) {
     Serial.println("V6 Pressed: Updating LCD...");
-    
+
     // Berhentikan semua aktivitas
     stopFlag = true;
     isPlaying = false;
     isTimer = false;
-    
+
     noTone(BUZZER_PIN);
     setRgb(0, 0, 0);
-    
+
     // Tampilkan pesan loading di LCD
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("Syncing Data...");
-    
+
     // Paksa ambil data terbaru dari server Blynk
     Blynk.syncVirtual(V4, V5);
-    
+
     // PENTING: Panggil Blynk.run() beberapa kali agar paket sync diproses
     for (int i = 0; i < 10; i++) {
       Blynk.run();
       delay(50);
     }
-    
-    Serial.print("Final L1: "); Serial.println(inputL1);
-    Serial.print("Final L2: "); Serial.println(inputL2);
-    
+
+    Serial.print("Final L1: ");
+    Serial.println(inputL1);
+    Serial.print("Final L2: ");
+    Serial.println(inputL2);
+
     lcd.clear();
     if (inputL1.length() == 0 && inputL2.length() == 0) {
       lcdPrint("Data Masih Kosong", "Cek Koneksi App");
     } else {
       lcdPrint(inputL1.c_str(), inputL2.c_str());
     }
-    
-    Blynk.virtualWrite(V20, "LCD Updated!"); 
+
+    Blynk.virtualWrite(V20, "LCD Updated!");
   }
 }
-//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
+
 // V7: [Integer] Switch Master ON/OFF untuk lampu LED
 BLYNK_WRITE(V7) {
   ledOn = param.asInt() == 1;
@@ -1417,7 +1425,7 @@ BLYNK_WRITE(V25) {
     Blynk.virtualWrite(V2, timerSeconds);
   }
 }
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 // Song Hotkeys (V11-V19): [Integer] Tombol instan per lagu
 BLYNK_WRITE(V11) {
   if (param.asInt() == 1)
@@ -1608,7 +1616,7 @@ void playSong(int songId) {
   currentSong = -1;
   Blynk.virtualWrite(V20, "System Ready");
 }
-//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
+
 int beepIntervalMs[] = {900, 850, 800, 720, 640, 560, 480, 400,
                         330, 270, 220, 180, 150, 120, 100};
 
@@ -1629,52 +1637,61 @@ void runTimer(int totalSec) {
       int idx = 15 - detik;
       int interval = beepIntervalMs[idx];
       int freq = 880 + (idx * 80);
-      if (freq > 2000) freq = 2000;
+      if (freq > 2000)
+        freq = 2000;
 
       unsigned long startSec = millis();
       while (millis() - startSec < 1000 && !stopFlag) {
         // Nyalakan Buzzer & LED
         tone(BUZZER_PIN, freq);
-        if (ledOn && ledSync) setRgb(255, 255, 255);
+        if (ledOn && ledSync)
+          setRgb(255, 255, 255);
         delay(50);
-        
+
         // Matikan Buzzer & LED
         noTone(BUZZER_PIN);
-        if (ledOn && ledSync) setRgb(0, 0, 0);
-        
+        if (ledOn && ledSync)
+          setRgb(0, 0, 0);
+
         int wait = interval - 50;
-        if (wait < 10) wait = 10;
-        
+        if (wait < 10)
+          wait = 10;
+
         unsigned long startWait = millis();
-        while(millis() - startWait < (unsigned long)wait && !stopFlag) {
+        while (millis() - startWait < (unsigned long)wait && !stopFlag) {
           delay(5);
         }
-        if (millis() - startSec >= 1000) break;
+        if (millis() - startSec >= 1000)
+          break;
       }
-    } 
+    }
     // Di atas 15 detik: Beep sekali tiap detik
     else {
-      if (ledOn && ledSync) setRgb(255, 255, 255);
+      if (ledOn && ledSync)
+        setRgb(255, 255, 255);
       tone(BUZZER_PIN, 1000);
       delay(100);
       noTone(BUZZER_PIN);
-      if (ledOn && ledSync) setRgb(0, 0, 0);
-      
+      if (ledOn && ledSync)
+        setRgb(0, 0, 0);
+
       safeDelay(900);
     }
   }
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
   // ALARM SELESAI
   if (!stopFlag) {
     lcdPrint("   TIME OUT!!   ", "  Relay Active  ");
     Blynk.virtualWrite(V20, "TIME OUT!!");
-    
+
     for (int i = 0; i < 5 && !stopFlag; i++) {
       tone(BUZZER_PIN, 1200);
-      if (ledOn && ledSync) setRgb(255, 0, 0); 
+      if (ledOn && ledSync)
+        setRgb(255, 0, 0);
       delay(500);
       noTone(BUZZER_PIN);
-      if (ledOn && ledSync) setRgb(0, 0, 0);
+      if (ledOn && ledSync)
+        setRgb(0, 0, 0);
       delay(500);
     }
 
@@ -1708,9 +1725,21 @@ void musicTask(void *pvParams) {
 void startMusicTask(int mode, int value) {
   if (musicTaskHandle != NULL) {
     stopFlag = true;
-    delay(300);
-    vTaskDelete(musicTaskHandle);
-    musicTaskHandle = NULL;
+
+    // Tunggu maksimal 1000ms agar task selesai sendiri (keluar dari delay/loop)
+    int waitCounter = 0;
+    while (musicTaskHandle != NULL && waitCounter < 20) {
+      delay(50);
+      waitCounter++;
+    }
+
+    // Jika task masih nyangkut, force delete (hindari NULL pointer delete)
+    if (musicTaskHandle != NULL) {
+      TaskHandle_t tempHandle = musicTaskHandle;
+      musicTaskHandle = NULL;
+      vTaskDelete(tempHandle);
+    }
+
     noTone(BUZZER_PIN);
     setRgb(0, 0, 0);
     isPlaying = false;
@@ -1756,7 +1785,7 @@ void setup() {
   lcd.backlight();
   Wire.setClock(400000); // Set I2C ke High Speed (400kHz) agar lirik sinkron
   lcdPrint("Initializing...", "Premium Hybrid");
-//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
+
   pinMode(BUZZER_PIN, OUTPUT);
   pinMode(PIN_LED_R, OUTPUT);
   pinMode(PIN_LED_G, OUTPUT);
@@ -1768,7 +1797,8 @@ void setup() {
   analogWriteResolution(PIN_LED_R, 8);
   analogWriteResolution(PIN_LED_G, 8);
   analogWriteResolution(PIN_LED_B, 8);
-  // Gunakan frekuensi default 1000Hz untuk menghindari konflik timer dengan tone()
+  // Gunakan frekuensi default 1000Hz untuk menghindari konflik timer dengan
+  // tone()
 
   Blynk.begin(auth, WIFI_SSID, WIFI_PASSWORD);
   server.on("/", handleRoot);
@@ -1776,7 +1806,7 @@ void setup() {
   server.begin();
   lcdPrint("System Ready!", WiFi.localIP().toString().c_str());
 }
-
+//by Zmc18-Robotics ~ @mc.zminecrafter_18 ~ Zmc18_Roboticz
 void loop() {
   Blynk.run();
   server.handleClient();
